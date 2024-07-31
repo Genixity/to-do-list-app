@@ -1,0 +1,327 @@
+/* General App Styling */
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Header Styling */
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.controls>* {
+  flex: 1 1 100%;
+  max-width: 200px;
+}
+
+.toggle-theme,
+.add-btn {
+  padding: 10px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  background-color: var(--card-background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s, color 0.3s;
+  transition: border-color 0.3s ease;
+  margin: 0;
+}
+
+.toggle-theme:hover,
+.add-btn:hover,
+button:hover {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Todo Lists Styling */
+.todo-lists {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Visibility Classes */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 300ms ease;
+}
+
+.visible {
+  opacity: 1;
+  pointer-events: auto;
+  position: absolute;
+  transition: opacity 300ms ease;
+}
+
+/* Icon Container Styling */
+.icon-container {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: color 0.3s ease;
+}
+
+.icon-container:hover {
+  color: var(--primary-color);
+}
+
+/* Todo List Card Styling */
+.todo-list-card {
+  background-color: var(--card-background-color);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  min-width: 0;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 1;
+  width: 220px;
+}
+
+.todo-list-card.expanding {
+  z-index: 1000;
+}
+
+.todo-list-name,
+.edit-input {
+  font-size: 1.2em;
+  flex-grow: 1;
+  max-width: 162px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  color: inherit;
+}
+
+.edit-input:focus {
+  outline: none;
+}
+
+.todo-list-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* Add Todo List Styling */
+.add-todo-list {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.new-list-input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+
+.new-list-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+}
+
+.add-btn:hover {
+  background-color: #d93600;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal Styling */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+}
+
+.modal-content {
+  position: relative;
+  background-color: var(--card-background-color);
+  padding: 40px 20px 20px 20px;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  width: 400px;
+  text-align: center;
+  animation: slideIn 0.3s;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.modal h2 {
+  margin: 5px 0 20px;
+}
+
+.modal input {
+  margin: 10px 0 20px;
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+
+.modal input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+
+  .App-header,
+  .controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .controls {
+    gap: 15px;
+  }
+
+  .controls>* {
+    width: 100%;
+    max-width: none;
+  }
+
+  .todo-lists {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-content {
+    width: 80%;
+    width: min(400px, 80%);
+  }
+
+  main {
+    width: 100%;
+  }
+
+  .todo-list-card {
+    width: 90%;
+    margin: 0 auto;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .App-header {
+    padding: 10px;
+  }
+
+  .controls {
+    width: 100%;
+  }
+
+  .add-btn,
+  .new-list-input {
+    width: 100%;
+  }
+
+  .modal-content {
+    width: 75%;
+  }
+
+  main {
+    width: 100%;
+  }
+
+  .todo-list-card {
+    width: 90%;
+  }
+}
