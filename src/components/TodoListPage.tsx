@@ -1,140 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useCallback, useMemo } from 'react';
+import useTodos from '../hooks/useTodos';
 import TodoList from './TodoList';
 import TodoForm from './TodoForm';
-import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-
-type Priority = 'Low' | 'Medium' | 'High';
-
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-  todoListsId: number;
-  priority: Priority;
-  dueDate: string;
-  tags: string[];
-  createdAt: string;
-}
+import CreatableSelect, { MultiValue } from 'react-select';
+import { FaSun, FaMoon } from 'react-icons/fa';
+import LanguageSelector from './LanguageSelector';
+import customStyles, { OptionType } from '../styles/customStyles';
+import '../styles/TodoListPage.css';
 
 interface TodoListPageProps {
   listId: number;
   goBack: () => void;
+  theme: string;
+  toggleTheme: () => void;
 }
 
-const TodoListPage: React.FC<TodoListPageProps> = ({ listId, goBack }) => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+const TodoListPage: React.FC<TodoListPageProps> = ({ listId, goBack, theme, toggleTheme }) => {
+  const { todos, title, tagOptions, addTodo, toggleTodo, removeTodo, updateTodo } = useTodos(listId);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchText, setSearchText] = useState<string>('');
-  const [filterTags, setFilterTags] = useState<string[]>([]);
+  const [filterTags, setFilterTags] = useState<MultiValue<OptionType>>([]);
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<string>('asc');
   const { t } = useTranslation();
 
-  const apiUrl = `https://66a89223e40d3aa6ff588463.mockapi.io/api/v1/todos`;
+  const priorityOrder = useMemo(() => ({ Low: 1, Medium: 2, High: 3 }), []);
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const response = await axios.get(apiUrl, { params: { todoListsId: listId } });
-        console.log("Fetched todos:", response.data);
-        setTodos(response.data);
-        checkDueDates(response.data); // Check due dates on initial fetch
-      } catch (error) {
-        console.error("Failed to fetch todos:", error);
-      }
-    };
-
-    fetchTodos();
-  }, [listId]);
-
-  const checkDueDates = (todos: Todo[]) => {
-    const today = new Date();
-    todos.forEach(todo => {
-      if (todo.dueDate) {
-        const dueDate = new Date(todo.dueDate);
-        const diffTime = dueDate.getTime() - today.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays <= 1 && !todo.completed) {
-          toast.warn(`Úkol "${todo.text}" má termín splatnosti ${dueDate.toLocaleDateString()}`);
-        }
-      }
-    });
-  };
-
-  const addTodo = async (text: string, priority: Priority, dueDate: string, tags: string[]) => {
-    const newTodo = {
-      text,
-      completed: false,
-      todoListsId: listId,
-      priority,
-      dueDate,
-      tags,
-      createdAt: new Date().toISOString()
-    };
-    try {
-      const response = await axios.post(apiUrl, newTodo);
-      console.log("Added todo:", response.data);
-      setTodos([...todos, response.data]);
-      checkDueDates([response.data]); // Check due date for new todo
-    } catch (error) {
-      console.error("Failed to add todo:", error);
-    }
-  };
-
-  const toggleTodo = async (id: number) => {
-    const todo = todos.find(todo => todo.id === id);
-    if (todo) {
-      const updatedTodo = { ...todo, completed: !todo.completed };
-      try {
-        const response = await axios.put(`${apiUrl}/${id}`, updatedTodo);
-        console.log("Toggled todo:", response.data);
-        setTodos(todos.map(todo => (todo.id === id ? response.data : todo)));
-      } catch (error) {
-        console.error("Failed to toggle todo:", error);
-      }
-    }
-  };
-
-  const removeTodo = async (id: number) => {
-    try {
-      await axios.delete(`${apiUrl}/${id}`);
-      console.log("Removed todo:", id);
-      setTodos(todos.filter(todo => todo.id !== id));
-    } catch (error) {
-      console.error("Failed to remove todo:", error);
-    }
-  };
-
-  const editTodo = (id: number) => {
-    setEditingId(id);
-  };
-
-  const updateTodo = async (id: number, newText: string, newPriority: Priority, newDueDate: string, newTags: string[]) => {
-    const updatedTodo = todos.find(todo => todo.id === id);
-    if (updatedTodo) {
-      updatedTodo.text = newText;
-      updatedTodo.priority = newPriority;
-      updatedTodo.dueDate = newDueDate;
-      updatedTodo.tags = newTags;
-      try {
-        const response = await axios.put(`${apiUrl}/${id}`, updatedTodo);
-        console.log("Updated todo:", response.data);
-        setTodos(todos.map(todo => (todo.id === id ? response.data : todo)));
-        setEditingId(null);
-      } catch (error) {
-        console.error("Failed to update todo:", error);
-      }
-    }
-  };
-
-  const priorityOrder: { [key in Priority]: number } = { Low: 1, Medium: 2, High: 3 };
-
-  const filteredTodos = todos
-    .filter(todo => 
+  const filteredTodos = useMemo(() => todos
+    .filter(todo =>
       todo.text.toLowerCase().includes(searchText.toLowerCase()) &&
-      (filterTags.length === 0 || filterTags.every(tag => todo.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())))
+      (filterTags.length === 0 || filterTags.every(tag => todo.tags.includes(tag.value)))
     )
     .sort((a, b) => {
       let comparison = 0;
@@ -142,7 +38,7 @@ const TodoListPage: React.FC<TodoListPageProps> = ({ listId, goBack }) => {
         comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
       if (sortBy === 'priority') {
-        comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
+        comparison = priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
       }
       if (sortBy === 'dueDate') {
         comparison = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
@@ -151,51 +47,66 @@ const TodoListPage: React.FC<TodoListPageProps> = ({ listId, goBack }) => {
         comparison = a.text.localeCompare(b.text);
       }
       return sortOrder === 'asc' ? comparison : -comparison;
-    });
+    }), [todos, searchText, filterTags, sortBy, sortOrder, priorityOrder]);
 
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tags = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-    setFilterTags(tags);
-  };
+  const handleFilterTagsChange = useCallback((selectedOptions: MultiValue<OptionType>) => {
+    setFilterTags(selectedOptions as OptionType[]);
+  }, []);
 
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
+  const toggleSortOrder = useCallback(() => {
+    setSortOrder(prevSortOrder => (prevSortOrder === 'asc' ? 'desc' : 'asc'));
+  }, []);
 
   return (
-    <div>
-      <button onClick={goBack}>{t('Back')}</button>
-      <h2>{t('Todo Lists')}</h2>
-      <input
-        type="text"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        placeholder={t('Search Todos')}
-      />
-      <input
-        type="text"
-        value={filterTags.join(', ')}
-        onChange={handleTagsChange}
-        placeholder={t('Filter Tags')}
-      />
-      <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-        <option value="createdAt">{t('Created At')}</option>
-        <option value="priority">{t('Priority')}</option>
-        <option value="dueDate">{t('Due Date')}</option>
-        <option value="text">{t('Alphabetically')}</option>
-      </select>
-      <button onClick={toggleSortOrder}>
-        {t('Sort by')} {sortOrder === 'asc' ? t('Ascending') : t('Descending')}
-      </button>
-      <TodoForm addTodo={addTodo} />
-      <TodoList 
-        todos={filteredTodos} 
-        toggleTodo={toggleTodo} 
-        removeTodo={removeTodo} 
-        editTodo={editTodo}
-        updateTodo={updateTodo}
-        editingId={editingId}
-      />
+    <div className="todo-list-page">
+      <div className="sidebar">
+        <button onClick={goBack} className="back-button">{t('Back')}</button>
+        <div className="controls">
+          <button onClick={toggleTheme} className="toggle-theme theme-button" aria-label="toggle theme" style={{ minWidth: '100%' }}>
+            {theme === 'light-mode' ? <FaMoon /> : <FaSun />}
+          </button>
+          <LanguageSelector style={{ minWidth: '100%', marginBottom: '30px' }} />
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder={t('Search Todos')}
+            className="input-search"
+          />
+          <CreatableSelect
+            isMulti
+            name="tags"
+            options={tagOptions}
+            className="react-select-container"
+            classNamePrefix="react-select"
+            onChange={handleFilterTagsChange}
+            value={filterTags}
+            placeholder={t('Filter Tags')}
+            styles={customStyles}
+          />
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="select-sort">
+            <option value="createdAt">{t('Created At')}</option>
+            <option value="priority">{t('Priority')}</option>
+            <option value="dueDate">{t('Due Date')}</option>
+            <option value="text">{t('Alphabetically')}</option>
+          </select>
+          <button onClick={toggleSortOrder} className="sort-button">
+            {t('Sort by')} {sortOrder === 'asc' ? t('Ascending') : t('Descending')}
+          </button>
+        </div>
+      </div>
+      <div className="main-content">
+        <h2 className="page-title">{title}</h2>
+        <TodoForm addTodo={addTodo} />
+        <TodoList
+          todos={filteredTodos}
+          toggleTodo={toggleTodo}
+          removeTodo={removeTodo}
+          editTodo={setEditingId}
+          updateTodo={updateTodo}
+          editingId={editingId}
+        />
+      </div>
     </div>
   );
 };

@@ -66,7 +66,7 @@ const App: React.FC = () => {
   });
 
   if (selectedListId !== null) {
-      return <TodoListPage listId={selectedListId} goBack={() => setSelectedListId(null)} />;
+      return <TodoListPage listId={selectedListId} goBack={() => setSelectedListId(null)} theme={theme} toggleTheme={toggleTheme} />;
   }
 
   return (

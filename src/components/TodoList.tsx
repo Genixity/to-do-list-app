@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 import TodoItem from './TodoItem';
+import '../styles/TodoListPage.css';
 
 type Priority = 'Low' | 'Medium' | 'High';
 
@@ -17,14 +18,14 @@ interface TodoListProps {
   todos: Todo[];
   toggleTodo: (id: number) => void;
   removeTodo: (id: number) => void;
-  editTodo: (id: number) => void;
+  editTodo: (id: number | null) => void;
   updateTodo: (id: number, newText: string, newPriority: Priority, newDueDate: string, newTags: string[]) => void;
   editingId: number | null;
 }
 
 const TodoList: React.FC<TodoListProps> = ({ todos, toggleTodo, removeTodo, editTodo, updateTodo, editingId }) => {
   return (
-    <ul>
+    <ul className="todo-list">
       {todos.map(todo => (
         <TodoItem 
           key={todo.id} 
@@ -40,4 +41,4 @@ const TodoList: React.FC<TodoListProps> = ({ todos, toggleTodo, removeTodo, edit
   );
 };
 
-export default TodoList;
+export default memo(TodoList);

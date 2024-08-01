@@ -1,22 +1,28 @@
 :root {
-  --background-color: #ffffff;
+  --background-color: #FFFFFF;
   --text-color: #000000;
+  --placeholder-text-color: #a8a8a8;
   --primary-color: #f44100;
-  --card-background-color: #f8f9fa;
+  --card-background-color: #F2F2F7;
   --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --input-glow: rgba(255, 255, 255, 0.8);
   --input-border-color: #ced4da;
 }
 
 body.light-mode {
-  --background-color: #ffffff;
+  --background-color: #FFFFFF;
   --text-color: #000000;
-  --card-background-color: #f8f9fa;
+  --card-background-color: #F2F2F7;
+  --tag-background-color: #D1D1D6;
+  --input-glow: rgba(255, 255, 255, 0.8);
 }
 
 body.dark-mode {
   --background-color: #121212;
-  --text-color: #ffffff;
+  --text-color: #FFFFFF;
   --card-background-color: #1e1e1e;
+  --tag-background-color: #333333;
+  --input-glow: rgba(255, 255, 255, .05);
 }
 
 body {

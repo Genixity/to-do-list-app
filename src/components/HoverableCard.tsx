@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { FaTrashAlt, FaEdit, FaCheck } from 'react-icons/fa';
+import '../styles/App.css';
 
 interface HoverableCardProps {
   style: any;
@@ -61,7 +62,7 @@ const HoverableCard: React.FC<HoverableCardProps> = ({
 
   return (
     <animated.div
-      style={style}
+      style={{ ...style, ...(hover && !isDeleting ? hoverStyle : {}) }}
       className={`todo-list-card ${isDeleting ? 'deleting' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -84,11 +85,11 @@ const HoverableCard: React.FC<HoverableCardProps> = ({
       <div className="todo-list-actions">
         <div className="icon-container">
           <FaEdit
-            className={`edit-icon ${editingListId === list.id ? 'hidden' : 'visible'}`}
+            className={`${editingListId === list.id ? 'hidden' : 'visible'}`}
             onClick={() => startEditing(list.id, list.name)}
           />
           <FaCheck
-            className={`save-icon ${editingListId === list.id ? 'visible' : 'hidden'}`}
+            className={`${editingListId === list.id ? 'visible' : 'hidden'}`}
             onClick={saveEdit}
           />
         </div>

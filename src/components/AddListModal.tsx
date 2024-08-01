@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { animated, useTransition, config } from '@react-spring/web';
 import { FaTimes } from 'react-icons/fa';
+import '../styles/App.css';
 
 interface AddListModalProps {
   isOpen: boolean;

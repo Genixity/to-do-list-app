@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaPlus, FaSun, FaMoon } from 'react-icons/fa';
 import LanguageSelector from './LanguageSelector';
+import '../styles/App.css';
 
 interface HeaderProps {
   theme: string;

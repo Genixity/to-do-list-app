@@ -20,7 +20,11 @@ const languages = [
   { code: 'it', name: 'Italy' },
 ];
 
-const LanguageSelector: React.FC = () => {
+interface LanguageSelectorProps {
+  style?: React.CSSProperties;
+}
+
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => {
   const { i18n } = useTranslation();
 
   const changeLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -28,7 +32,7 @@ const LanguageSelector: React.FC = () => {
   };
 
   return (
-    <div className="language-selector">
+    <div className="language-selector" style={style}>
       <select onChange={changeLanguage} value={i18n.language}>
         {languages.map((language) => (
           <option key={language.code} value={language.code}>

@@ -65,32 +65,31 @@ describe('App Component', () => {
   test('adds a new todo list', async () => {
     mockedAxios.post.mockResolvedValue({ data: { id: 1, name: 'New List' } });
     mockedAxios.get.mockResolvedValue({ data: [] });
-  
+
     await act(async () => {
       renderWithI18n(<App />);
     });
-  
+
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /add new list/i }));
     });
-  
-    // Wait for the modal to open and the input field to appear
+
     const input = await waitFor(() => screen.getByPlaceholderText(/new list name/i));
-  
+
     await act(async () => {
       fireEvent.change(input, { target: { value: 'New List' } });
     });
-  
+
     const addButton = await waitFor(() =>
       screen.getAllByRole('button', { name: /add/i }).find(button => button.closest('.modal-content'))
     );
-  
+
     await act(async () => {
       fireEvent.click(addButton!);
     });
-  
+
     await waitFor(() => expect(screen.getByText('New List')).toBeInTheDocument());
-  });  
+  });
 
   test('handles failed todo list fetch', async () => {
     mockedAxios.get.mockRejectedValueOnce(new Error('Failed to fetch'));
